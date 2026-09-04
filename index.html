@@ -1,0 +1,753 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Розклад занять | Група РЗ-232</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+    .custom-scrollbar::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+      background: #334155;
+      border-radius: 9999px;
+    }
+  </style>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen p-3 sm:p-6 lg:p-8 selection:bg-indigo-500 selection:text-white">
+  <div class="max-w-7xl mx-auto space-y-6">
+    
+    <!-- Шапка з перемикачами -->
+    <header class="bg-slate-900/80 border border-slate-800/80 backdrop-blur-xl rounded-2xl p-5 sm:p-6 shadow-2xl shadow-indigo-950/20">
+      <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+        <div>
+          <div class="flex flex-wrap items-center gap-2 mb-2.5">
+            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold bg-indigo-500/10 text-indigo-400 border border-indigo-500/20">
+              <span class="inline-block w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+              <span id="current-week-badge">Тиждень ...</span>
+            </div>
+            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold bg-slate-800 text-slate-300 border border-slate-700">
+              4 Курс • Група РЗ-232 • Кафедра КБПЗ
+            </div>
+          </div>
+          <h1 class="text-2xl sm:text-3xl font-extrabold text-white tracking-tight flex items-center gap-3">
+            <span>🛡️</span> Розклад
+          </h1>
+          <p class="text-xs sm:text-sm text-slate-400 mt-1">
+            Швидкий доступ до Zoom, Google Meet, Teams, конспектів та дедлайнів лабораторок
+          </p>
+        </div>
+
+        <!-- Навігація по тижнях -->
+        <div class="flex items-center bg-slate-950 p-1.5 rounded-xl border border-slate-800 gap-1">
+          <button onclick="changeWeek(-1)" class="p-2 text-slate-400 hover:text-white hover:bg-slate-800 rounded-lg transition-all" title="Попередній тиждень">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+          </button>
+          <div class="px-2 py-1 text-center min-w-[120px]">
+            <div id="week-display-num" class="text-sm font-bold text-white">Тиждень 1</div>
+            <div id="week-display-type" class="text-[10px] font-semibold text-emerald-400 uppercase tracking-wide">Непарний</div>
+          </div>
+          <button onclick="changeWeek(1)" class="p-2 text-slate-400 hover:text-white hover:bg-slate-800 rounded-lg transition-all" title="Наступний тиждень">
+             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+          </button>
+          <button onclick="resetWeek()" id="btn-reset-week" class="hidden ml-1 px-3 py-1.5 bg-indigo-600 hover:bg-indigo-500 shadow-lg shadow-indigo-500/30 text-white text-xs font-bold rounded-lg transition-all">
+            Сьогодні
+          </button>
+        </div>
+      </div>
+
+      <div id="live-banner" class="mt-5 pt-4 border-t border-slate-800/80 flex flex-wrap items-center justify-between gap-3 text-xs sm:text-sm">
+        <div class="flex items-center gap-2.5">
+          <span class="text-slate-400">Поточний статус:</span>
+          <span id="current-status-badge" class="font-bold text-indigo-300 bg-indigo-950/60 px-2.5 py-1 rounded-lg border border-indigo-800/50">
+            Завантаження розкладу...
+          </span>
+        </div>
+    
+      </div>
+    </header>
+
+    <main id="schedule-grid" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
+      <!-- Картки днів тижня рендеряться динамічно -->
+    </main>
+
+    <section class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      
+      <!-- Швидкі посилання на платформи -->
+      <div class="bg-slate-900/60 border border-slate-800 rounded-2xl p-5 flex flex-col justify-between">
+        <div>
+          <h3 class="font-bold text-white text-base mb-3 flex items-center gap-2">
+            <span>🔗</span> Швидкі кімнати відеозв'язку
+          </h3>
+          <div class="space-y-2.5 text-xs h-64 overflow-y-auto custom-scrollbar pr-2">
+            
+            <a href="https://us05web.zoom.us/j/6012015122?pwd=bEp2tsMJoxeYHeevUVF1AQGR0GnbCg.1" target="_blank" rel="noopener" class="flex items-center justify-between p-2.5 rounded-xl bg-slate-950 border border-slate-800 hover:border-blue-500/50 hover:bg-slate-900 transition group">
+              <div class="flex items-center gap-2">
+                <span class="w-6 h-6 rounded-lg bg-blue-500/20 text-blue-400 flex items-center justify-center font-bold">Z</span>
+                <div>
+                  <div class="font-semibold text-slate-200 group-hover:text-blue-400 transition">Zoom • Стеганографія</div>
+                  <div class="text-[11px] text-slate-500">св. Борисенко Ірина Іванівна</div>
+                </div>
+              </div>
+              <span class="text-blue-400 text-xs font-semibold">Вхід →</span>
+            </a>
+
+            <a href="https://us04web.zoom.us/j/75523031710?pwd=8qb2Fz4vdLcajVKsxIX7chpuQ6PCSH.1" target="_blank" rel="noopener" class="flex items-center justify-between p-2.5 rounded-xl bg-slate-950 border border-slate-800 hover:border-blue-500/50 hover:bg-slate-900 transition group">
+              <div class="flex items-center gap-2">
+                <span class="w-6 h-6 rounded-lg bg-blue-500/20 text-blue-400 flex items-center justify-center font-bold">Z</span>
+                <div>
+                  <div class="font-semibold text-slate-200 group-hover:text-blue-400 transition">Zoom • Оцінка захищеності інф. систем</div>
+                  <div class="text-[11px] text-slate-500">доц. Агаджанян Олена Василівна</div>
+                </div>
+              </div>
+              <span class="text-blue-400 text-xs font-semibold">Вхід →</span>
+            </a>
+
+            <a href="https://meet.google.com/rzc-eycg-ooq" target="_blank" rel="noopener" class="flex items-center justify-between p-2.5 rounded-xl bg-slate-950 border border-slate-800 hover:border-emerald-500/50 hover:bg-slate-900 transition group">
+              <div class="flex items-center gap-2">
+                <span class="w-6 h-6 rounded-lg bg-emerald-500/20 text-emerald-400 flex items-center justify-center font-bold">G</span>
+                <div>
+                  <div class="font-semibold text-slate-200 group-hover:text-emerald-400 transition">Google Meet • Управління доступом (Лаб)</div>
+                  <div class="text-[11px] text-slate-500">Софія Анатоліївна Алєксєєва</div>
+                </div>
+              </div>
+              <span class="text-emerald-400 text-xs font-semibold">Вхід →</span>
+            </a>
+
+            <a href="https://meet.google.com/mgt-bmnn-hqu" target="_blank" rel="noopener" class="flex items-center justify-between p-2.5 rounded-xl bg-slate-950 border border-slate-800 hover:border-emerald-500/50 hover:bg-slate-900 transition group">
+              <div class="flex items-center gap-2">
+                <span class="w-6 h-6 rounded-lg bg-emerald-500/20 text-emerald-400 flex items-center justify-center font-bold">G</span>
+                <div>
+                  <div class="font-semibold text-slate-200 group-hover:text-emerald-400 transition">Google Meet • Управління доступом (Лек)</div>
+                  <div class="text-[11px] text-slate-500">доц. Сиропятов Олександр Арсенійович</div>
+                </div>
+              </div>
+              <span class="text-emerald-400 text-xs font-semibold">Вхід →</span>
+            </a>
+
+            <a href="https://meet.google.com/hbq-szcd-tne" target="_blank" rel="noopener" class="flex items-center justify-between p-2.5 rounded-xl bg-slate-950 border border-slate-800 hover:border-emerald-500/50 hover:bg-slate-900 transition group">
+              <div class="flex items-center gap-2">
+                <span class="w-6 h-6 rounded-lg bg-emerald-500/20 text-emerald-400 flex items-center justify-center font-bold">G</span>
+                <div>
+                  <div class="font-semibold text-slate-200 group-hover:text-emerald-400 transition">Google Meet • Управління кібербезпекою</div>
+                  <div class="text-[11px] text-slate-500">доц. Мельник Маргарита Олександрівна</div>
+                </div>
+              </div>
+              <span class="text-emerald-400 text-xs font-semibold">Вхід →</span>
+            </a>
+
+            <a href="https://meet.google.com/rum-tati-rno" target="_blank" rel="noopener" class="flex items-center justify-between p-2.5 rounded-xl bg-slate-950 border border-slate-800 hover:border-emerald-500/50 hover:bg-slate-900 transition group">
+              <div class="flex items-center gap-2">
+                <span class="w-6 h-6 rounded-lg bg-emerald-500/20 text-emerald-400 flex items-center justify-center font-bold">G</span>
+                <div>
+                  <div class="font-semibold text-slate-200 group-hover:text-emerald-400 transition">Google Meet • Проєктування захищ. ІС</div>
+                  <div class="text-[11px] text-slate-500">доц. Шаповалов Геннадій Віталійович</div>
+                </div>
+              </div>
+              <span class="text-emerald-400 text-xs font-semibold">Вхід →</span>
+            </a>
+
+            <a href="https://us04web.zoom.us/j/3856787724?pwd=NnNzc1B6SWk5UkNsZ2FKSHE1VE85Zz09" target="_blank" rel="noopener" class="flex items-center justify-between p-2.5 rounded-xl bg-slate-950 border border-slate-800 hover:border-blue-500/50 hover:bg-slate-900 transition group">
+              <div class="flex items-center gap-2">
+                <span class="w-6 h-6 rounded-lg bg-blue-500/20 text-blue-400 flex items-center justify-center font-bold">Z</span>
+                <div>
+                  <div class="font-semibold text-slate-200 group-hover:text-blue-400 transition">Zoom • Основи захисту мобільних пристроїв</div>
+                  <div class="text-[11px] text-slate-500">доц. Садченко А.В.</div>
+                </div>
+              </div>
+              <span class="text-blue-400 text-xs font-semibold">Вхід →</span>
+            </a>
+
+          </div>
+        </div>
+      </div>
+
+      <div class="bg-slate-900/60 border border-slate-800 rounded-2xl p-5 lg:col-span-2 flex flex-col justify-between">
+        <div>
+          <div class="flex items-center justify-between mb-3">
+            <h3 class="font-bold text-white text-base flex items-center gap-2">
+              <span>📝</span> Трекер лабораторних та завдань
+            </h3>
+            <span class="text-xs text-slate-400">Зберігається автоматично</span>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4" id="tasks-list">
+            <!-- Завдання генеруються динамічно -->
+          </div>
+        </div>
+
+        <form id="add-task-form" onsubmit="addTask(event)" class="flex gap-2 pt-3 border-t border-slate-800">
+          <input type="text" id="task-input" placeholder="Додати завдання або дедлайн..." class="flex-1 bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2 text-xs sm:text-sm text-slate-200 placeholder-slate-500 focus:outline-none focus:border-indigo-500">
+          <button type="submit" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-xs sm:text-sm font-semibold transition">
+            + Додати
+          </button>
+        </form>
+      </div>
+    </section>
+
+    <!-- Повідомлення при копіюванні -->
+    <div id="toast" class="fixed bottom-6 right-6 bg-emerald-500 text-slate-950 font-bold px-4 py-2.5 rounded-xl shadow-2xl transition-all duration-300 transform translate-y-20 opacity-0 z-50 flex items-center gap-2 text-sm">
+      <span>✓</span> <span id="toast-message">Посилання скопійовано!</span>
+    </div>
+  </div>
+
+  <script>
+    // Час кожної пари
+    const PAIR_TIMES = {
+      1: { start: "08:00", end: "09:35", label: "08:00–08:45 / 08:50–09:35" },
+      2: { start: "09:50", end: "11:25", label: "09:50–10:35 / 10:40–11:25" },
+      3: { start: "11:40", end: "13:15", label: "11:40–12:25 / 12:30–13:15" },
+      4: { start: "13:30", end: "15:05", label: "13:30–14:15 / 14:20–15:05" },
+      5: { start: "15:20", end: "16:55", label: "15:20–16:05 / 16:10–16:55" }
+    };
+
+    // БАЗА РОЗКЛАДУ
+    const MASTER_SCHEDULE = {
+      // ПОНЕДІЛОК
+      "mon": {
+        name: "Понеділок",
+        dayNum: 1,
+        pairs: [
+          {
+            num: 1,
+            title: "Основи стеганографії",
+            type: "Лекція",
+            teacher: "св. Борисенко Ірина Іванівна",
+            weeks: "1-15",
+            weekType: "all",
+            group: "all",
+            link: "https://us05web.zoom.us/j/6012015122?pwd=bEp2tsMJoxeYHeevUVF1AQGR0GnbCg.1",
+            platform: "Zoom"
+          },
+          {
+            num: 2,
+            title: "Проєктування захищених інформаційних систем",
+            type: "Лекція",
+            teacher: "доц. Шаповалов Геннадій Віталійович",
+            weeks: "1-15",
+            weekType: "all",
+            group: "all",
+            link: "https://meet.google.com/rum-tati-rno",
+            platform: "Google Meet"
+          },
+          {
+            num: 3,
+            title: "Основи захищених мобільних пристроїв",
+            type: "Лабораторна",
+            teacher: "доц. Садченко А.В.",
+            weeks: "3-15 (непарні)",
+            weekType: "odd",
+            group: "РЗ-232",
+            link: "https://us04web.zoom.us/j/3856787724?pwd=NnNzc1B6SWk5UkNsZ2FKSHE1VE85Zz09",
+            platform: "Zoom"
+          },
+          {
+            num: 3,
+            title: "Проєктування захищених інформаційних систем",
+            type: "Лабораторна",
+            teacher: "доц. Шаповалов Геннадій Віталійович",
+            weeks: "2-14 (парні)",
+            weekType: "even",
+            group: "РЗ-232",
+            link: "https://meet.google.com/rum-tati-rno",
+            platform: "Google Meet"
+          }
+        ]
+      },
+
+      // ВІВТОРОК
+      "tue": {
+        name: "Вівторок",
+        dayNum: 2,
+        pairs: [
+          {
+            num: 1,
+            title: "Управління доступом",
+            type: "Лекція",
+            teacher: "доц. Сиропятов Олександр Арсенійович",
+            weeks: "1-15",
+            weekType: "all",
+            group: "all",
+            link: "https://meet.google.com/mgt-bmnn-hqu",
+            platform: "Google Meet"
+          },
+          {
+            num: 2,
+            title: "Методи оцінки захищеності інформаційних систем",
+            type: "Лекція",
+            teacher: "доц. Агаджанян Олена Василівна",
+            weeks: "1-15",
+            weekType: "all",
+            group: "all",
+            link: "https://us04web.zoom.us/j/75523031710?pwd=8qb2Fz4vdLcajVKsxIX7chpuQ6PCSH.1",
+            platform: "Zoom",
+            credentials: "ID: 755 2303 1710 | Код: 1"
+          }
+        ]
+      },
+
+      // СЕРЕДА
+      "wed": {
+        name: "Середа",
+        dayNum: 3,
+        pairs: [
+          {
+            num: 2,
+            title: "Основи стеганографії",
+            type: "Лабораторна",
+            teacher: "св. Борисенко Ірина Іванівна",
+            weeks: "1-15",
+            weekType: "all",
+            group: "РЗ-232",
+            link: "https://us05web.zoom.us/j/6012015122?pwd=bEp2tsMJoxeYHeevUVF1AQGR0GnbCg.1",
+            platform: "Zoom"
+          },
+          {
+            num: 3,
+            title: "Управління кібербезпекою",
+            type: "Лекція",
+            teacher: "доц. Мельник Маргарита Олександрівна",
+            weeks: "1-15",
+            weekType: "all",
+            group: "all",
+            link: "https://meet.google.com/hbq-szcd-tne",
+            platform: "Google Meet"
+          },
+          {
+            num: 4,
+            title: "Управління кібербезпекою",
+            type: "Лабораторна",
+            teacher: "доц. Мельник Маргарита Олександрівна",
+            weeks: "1-15",
+            weekType: "all",
+            group: "РЗ-232",
+            link: "https://meet.google.com/hbq-szcd-tne",
+            platform: "Google Meet"
+          }
+        ]
+      },
+
+      // ЧЕТВЕР
+      "thu": {
+        name: "Четвер",
+        dayNum: 4,
+        pairs: [
+          {
+            num: 1,
+            title: "Управління доступом",
+            type: "Лабораторна",
+            teacher: "Софія Анатоліївна Алєксєєва",
+            weeks: "1-15",
+            weekType: "all",
+            group: "РЗ-232",
+            link: "https://meet.google.com/rzc-eycg-ooq",
+            platform: "Google Meet"
+          },
+          {
+            num: 2,
+            title: "Методи оцінки захищеності інформаційних систем",
+            type: "Лабораторна",
+            teacher: "св. Дорофєєв Юрій Миколайович",
+            weeks: "1-15",
+            weekType: "all",
+            group: "РЗ-232",
+            link: "https://us04web.zoom.us/j/5488209266?pwd=kAn1qlrBiLMOIYGQ7ZDw48bFbBobCY.1",
+            platform: "Zoom"
+          },
+          {
+            num: 3,
+            title: "Основи захисту мобільних пристроїв",
+            type: "Лекція",
+            teacher: "доц. Садченко А.В.",
+            weeks: "1-15",
+            weekType: "all",
+            group: "all",
+            link: "https://us04web.zoom.us/j/3856787724?pwd=NnNzc1B6SWk5UkNsZ2FKSHE1VE85Zz09",
+            platform: "Zoom"
+          }
+        ]
+      }
+    };
+
+    const TRANSFERRED_DAYS = {
+      "2026-09-19": { targetDayNum: 1, targetWeekType: "even", note: "за ПН 30.11" },
+      "2026-09-26": { targetDayNum: 2, targetWeekType: "even", note: "за ВТ 01.12" },
+      "2026-10-03": { targetDayNum: 3, targetWeekType: "even", note: "за СР 02.12" },
+      "2026-10-10": { targetDayNum: 4, targetWeekType: "even", note: "за ЧТ 03.12" },
+      "2026-10-17": { targetDayNum: 5, targetWeekType: "even", note: "за ПТ 04.12" },
+      "2026-10-24": { targetDayNum: 1, targetWeekType: "odd", note: "за ПН 07.12" },
+      "2026-10-31": { targetDayNum: 2, targetWeekType: "odd", note: "за ВТ 08.12" },
+      "2026-11-07": { targetDayNum: 3, targetWeekType: "odd", note: "за СР 09.12" },
+      "2026-11-14": { targetDayNum: 4, targetWeekType: "odd", note: "за ЧТ 10.12" },
+      "2026-11-21": { targetDayNum: 5, targetWeekType: "odd", note: "за ПТ 11.12" }
+    };
+
+    function getLocalYMD(dateObj) {
+      const y = dateObj.getFullYear();
+      const m = String(dateObj.getMonth() + 1).padStart(2, '0');
+      const d = String(dateObj.getDate()).padStart(2, '0');
+      return `${y}-${m}-${d}`;
+    }
+
+    function getAcademicWeek(dateObj = new Date()) {
+      const startDate = new Date("2026-08-31T00:00:00");
+      startDate.setHours(0,0,0,0);
+      const today = new Date(dateObj);
+      today.setHours(0,0,0,0);
+      const diffTime = today - startDate;
+      const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+      if (diffDays < 0) return 1; 
+      return Math.floor(diffDays / 7) + 1;
+    }
+
+    function getDatesForWeek(weekNum) {
+      const startDate = new Date("2026-08-31T00:00:00");
+      startDate.setHours(0,0,0,0);
+      const daysOffset = (weekNum - 1) * 7;
+      
+      const dates = [];
+      for(let i=0; i<6; i++) { 
+        const d = new Date(startDate);
+        d.setDate(startDate.getDate() + daysOffset + i);
+        dates.push(d);
+      }
+      return dates;
+    }
+
+    const currentGroup = 'РЗ-232';
+    let tasks = JSON.parse(localStorage.getItem('rz_schedule_tasks') || '[]');
+    let actualCurrentWeekNumber = 1; 
+    let viewedWeekNumber = 1;
+
+    function getTypeBadge(type) {
+      if (type === 'Лекція') {
+        return 'bg-blue-500/10 text-blue-400 border-blue-500/20';
+      }
+      if (type === 'Лабораторна') {
+        return 'bg-amber-500/10 text-amber-400 border-amber-500/20';
+      }
+      return 'bg-purple-500/10 text-purple-400 border-purple-500/20';
+    }
+
+    function getPlatformIcon(platform) {
+      switch(platform) {
+        case 'Zoom':
+          return { icon: '📹', class: 'text-sky-400 bg-sky-500/10 border-sky-500/20 hover:bg-sky-500/20' };
+        case 'Google Meet':
+          return { icon: '🟢', class: 'text-emerald-400 bg-emerald-500/10 border-emerald-500/20 hover:bg-emerald-500/20' };
+        case 'MS Teams':
+          return { icon: '🟣', class: 'text-indigo-400 bg-indigo-500/10 border-indigo-500/20 hover:bg-indigo-500/20' };
+        default:
+          return { icon: '🔗', class: 'text-slate-400 bg-slate-800 border-slate-700 hover:bg-slate-700' };
+      }
+    }
+
+    function copyToClipboard(text, message = "Посилання скопійовано!") {
+      const textarea = document.createElement("textarea");
+      textarea.value = text;
+      document.body.appendChild(textarea);
+      textarea.select();
+      try {
+        document.execCommand('copy');
+        showToast(message);
+      } catch (err) {
+        console.error("Помилка копіювання: ", err);
+      }
+      document.body.removeChild(textarea);
+    }
+
+    function showToast(msg) {
+      const toast = document.getElementById('toast');
+      const msgEl = document.getElementById('toast-message');
+      msgEl.innerText = msg;
+      toast.classList.remove('translate-y-20', 'opacity-0');
+      toast.classList.add('translate-y-0', 'opacity-100');
+      setTimeout(() => {
+        toast.classList.add('translate-y-20', 'opacity-0');
+        toast.classList.remove('translate-y-0', 'opacity-100');
+      }, 2500);
+    }
+
+    function renderSchedule() {
+      const container = document.getElementById('schedule-grid');
+      const dates = getDatesForWeek(viewedWeekNumber);
+      const now = new Date();
+      const todayStr = getLocalYMD(now);
+      
+      const weekType = (viewedWeekNumber % 2 !== 0) ? 'odd' : 'even';
+      
+      document.getElementById('week-display-num').innerText = `Тиждень ${viewedWeekNumber}`;
+      const typeDisplay = document.getElementById('week-display-type');
+      if (weekType === 'odd') {
+        typeDisplay.innerText = '⚡ Непарний';
+        typeDisplay.className = 'text-[10px] font-semibold text-emerald-400 uppercase tracking-wide';
+      } else {
+        typeDisplay.innerText = 'Парний';
+        typeDisplay.className = 'text-[10px] font-semibold text-amber-400 uppercase tracking-wide';
+      }
+      
+      const btnReset = document.getElementById('btn-reset-week');
+      if (viewedWeekNumber !== actualCurrentWeekNumber) {
+        btnReset.classList.remove('hidden');
+      } else {
+        btnReset.classList.add('hidden');
+      }
+
+      let html = '';
+      const dayNumToKey = {1: 'mon', 2: 'tue', 3: 'wed', 4: 'thu'};
+
+      dates.forEach((dateObj) => {
+        const dateStr = getLocalYMD(dateObj);
+        const dayOfWeek = dateObj.getDay(); 
+        let scheduleDayKey = null;
+        let dayLabel = "";
+        let isTransfer = false;
+        let transferNote = "";
+        let activeWeekType = weekType;
+
+        if (TRANSFERRED_DAYS[dateStr]) {
+          const transfer = TRANSFERRED_DAYS[dateStr];
+          scheduleDayKey = dayNumToKey[transfer.targetDayNum];
+          dayLabel = `${dateObj.toLocaleDateString('uk-UA', {day: '2-digit', month: '2-digit'})} (Субота)`;
+          isTransfer = true;
+          transferNote = transfer.note;
+          activeWeekType = transfer.targetWeekType;
+        } else if (dayOfWeek >= 1 && dayOfWeek <= 4) {
+          scheduleDayKey = dayNumToKey[dayOfWeek];
+          const dayNames = {1: 'Понеділок', 2: 'Вівторок', 3: 'Середа', 4: 'Четвер'};
+          dayLabel = `${dayNames[dayOfWeek]}, ${dateObj.toLocaleDateString('uk-UA', {day: '2-digit', month: '2-digit'})}`;
+        }
+
+        if (!scheduleDayKey) return; 
+        
+        const dayData = MASTER_SCHEDULE[scheduleDayKey];
+        if (!dayData) return;
+
+        const isToday = (dateStr === todayStr);
+
+        const activePairs = dayData.pairs.filter(pair => {
+          const matchGroup = pair.group === 'all' || pair.group === currentGroup;
+          const matchWeek = pair.weekType === 'all' || pair.weekType === activeWeekType;
+          return matchGroup && matchWeek;
+        }).sort((a, b) => a.num - b.num);
+
+        html += `
+          <div class="flex flex-col bg-slate-900/50 rounded-2xl border ${isToday ? 'border-indigo-500 ring-2 ring-indigo-500/20 shadow-xl shadow-indigo-950/30' : 'border-slate-800/80'} overflow-hidden transition-all">
+            <div class="px-4 py-3.5 bg-slate-900/90 border-b border-slate-800/80 flex items-center justify-between">
+              <div class="flex flex-col">
+                <div class="flex items-center gap-2">
+                  <span class="font-extrabold text-slate-100">${dayLabel}</span>
+                  ${isToday ? '<span class="text-[10px] uppercase font-black tracking-wider bg-indigo-600 text-white px-2 py-0.5 rounded-full shadow">Сьогодні</span>' : ''}
+                </div>
+                ${isTransfer ? `<span class="text-[10px] text-amber-400 font-medium mt-0.5 bg-amber-500/10 inline-block px-1.5 py-0.5 rounded border border-amber-500/20 self-start">⚠️ Відпрацювання ${transferNote}</span>` : ''}
+              </div>
+              <span class="text-xs font-semibold px-2 py-0.5 rounded-md bg-slate-800 text-slate-400">${activePairs.length} пар(и)</span>
+            </div>
+
+            <div class="p-3 flex flex-col gap-3 flex-1">
+              ${activePairs.length === 0 ? `
+                <div class="py-12 text-center">
+                  <div class="text-2xl mb-1">🎉</div>
+                  <div class="text-xs font-semibold text-slate-500">Пар немає або вільний день</div>
+                </div>
+              ` : activePairs.map(p => {
+                const timeInfo = PAIR_TIMES[p.num] || { label: `Пара ${p.num}` };
+                const platInfo = p.platform ? getPlatformIcon(p.platform) : null;
+
+                return `
+                  <div class="bg-slate-950/80 rounded-xl p-3.5 border border-slate-800/80 hover:border-slate-700 transition flex flex-col justify-between group shadow-sm">
+                    <div>
+                      <div class="flex items-center justify-between gap-2 mb-2 text-[11px]">
+                        <span class="font-bold text-indigo-400 bg-indigo-950/50 px-2 py-0.5 rounded-md border border-indigo-900/50">
+                          ${p.num} пара • ${timeInfo.label}
+                        </span>
+                        <span class="px-2 py-0.5 rounded-md text-[10px] font-bold border ${getTypeBadge(p.type)}">
+                          ${p.type}
+                        </span>
+                      </div>
+
+                      <h4 class="font-bold text-sm text-slate-100 group-hover:text-indigo-200 transition leading-snug">
+                        ${p.title}
+                      </h4>
+
+                      <div class="mt-2 text-[11px] text-slate-400 flex items-center gap-1.5">
+                        <span class="text-slate-500">👤</span>
+                        <span class="font-medium">${p.teacher}</span>
+                      </div>
+                      ${p.credentials ? `<div class="mt-1 text-[10px] text-slate-500">${p.credentials}</div>` : ''}
+                    </div>
+
+                    ${p.link ? `
+                      <div class="mt-3 pt-3 border-t border-slate-800/80 flex items-center justify-between gap-2">
+                         <button onclick="copyToClipboard('${p.link}')" class="p-1.5 rounded-lg hover:bg-slate-800 text-slate-400 hover:text-slate-200 transition" title="Копіювати посилання">
+                           📋
+                         </button>
+                         <a href="${p.link}" target="_blank" rel="noopener" class="flex-1 flex items-center justify-center gap-1.5 py-1.5 rounded-lg text-xs font-bold transition border ${platInfo.class}">
+                           <span>${platInfo.icon}</span> Приєднатися
+                         </a>
+                      </div>
+                    ` : `
+                      <div class="mt-3 pt-3 border-t border-slate-800/80">
+                         <div class="py-1.5 rounded-lg text-xs font-semibold text-center text-slate-500 bg-slate-900 border border-slate-800">
+                           Посилання відсутнє
+                         </div>
+                      </div>
+                    `}
+                  </div>
+                `;
+              }).join('')}
+            </div>
+          </div>
+        `;
+      });
+
+      container.innerHTML = html;
+      updateLiveStatus();
+    }
+
+    function changeWeek(delta) {
+      viewedWeekNumber += delta;
+      if (viewedWeekNumber < 1) viewedWeekNumber = 1;
+      renderSchedule();
+    }
+
+    function resetWeek() {
+      viewedWeekNumber = actualCurrentWeekNumber;
+      renderSchedule();
+    }
+
+    function updateLiveStatus() {
+      const badge = document.getElementById('current-status-badge');
+      if(!badge) return;
+      
+      const now = new Date();
+      const dateStr = getLocalYMD(now);
+      let todayNum = now.getDay();
+      if (todayNum === 0) todayNum = 7; 
+      
+      let activeWeekType = (actualCurrentWeekNumber % 2 !== 0) ? 'odd' : 'even';
+
+      if (TRANSFERRED_DAYS[dateStr]) {
+         todayNum = TRANSFERRED_DAYS[dateStr].targetDayNum;
+         activeWeekType = TRANSFERRED_DAYS[dateStr].targetWeekType;
+      }
+
+      const dayKeys = Object.keys(MASTER_SCHEDULE);
+      const todayKey = dayKeys.find(k => MASTER_SCHEDULE[k].dayNum === todayNum);
+
+      if (!todayKey) {
+        badge.className = 'font-bold text-slate-300 bg-slate-800 px-2.5 py-1 rounded-lg border border-slate-700';
+        badge.innerText = 'Пари відсутні (Вихідний)';
+        return;
+      }
+
+      const day = MASTER_SCHEDULE[todayKey];
+      const activePairs = day.pairs.filter(pair => {
+        return (pair.group === 'all' || pair.group === currentGroup) &&
+               (pair.weekType === 'all' || pair.weekType === activeWeekType);
+      }).sort((a, b) => a.num - b.num);
+
+      if (activePairs.length === 0) {
+        badge.className = 'font-bold text-slate-300 bg-slate-800 px-2.5 py-1 rounded-lg border border-slate-700';
+        badge.innerText = 'Сьогодні пар немає';
+        return;
+      }
+
+      const currentTimeStr = now.getHours().toString().padStart(2, '0') + ':' + now.getMinutes().toString().padStart(2, '0');
+      let currentPair = null;
+      let nextPair = null;
+
+      for (let i = 0; i < activePairs.length; i++) {
+        const p = activePairs[i];
+        const t = PAIR_TIMES[p.num];
+        if (currentTimeStr >= t.start && currentTimeStr <= t.end) {
+          currentPair = p;
+          break;
+        }
+        if (currentTimeStr < t.start && !nextPair) {
+          nextPair = p;
+        }
+      }
+
+      if (currentPair) {
+        badge.className = 'font-bold text-emerald-300 bg-emerald-950/60 px-2.5 py-1 rounded-lg border border-emerald-800/50 flex items-center gap-2';
+        badge.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span> Зараз іде: ${currentPair.num} пара — ${currentPair.title}`;
+      } else if (nextPair) {
+        const t = PAIR_TIMES[nextPair.num];
+        badge.className = 'font-bold text-amber-300 bg-amber-950/60 px-2.5 py-1 rounded-lg border border-amber-800/50';
+        badge.innerText = `Наступна: ${nextPair.num} пара о ${t.start}`;
+      } else {
+        const lastPair = activePairs[activePairs.length-1];
+        if (currentTimeStr > PAIR_TIMES[lastPair.num].end) {
+          badge.className = 'font-bold text-slate-300 bg-slate-800 px-2.5 py-1 rounded-lg border border-slate-700';
+          badge.innerText = 'Пари на сьогодні завершились 🎉';
+        } else {
+          badge.className = 'font-bold text-indigo-300 bg-indigo-950/60 px-2.5 py-1 rounded-lg border border-indigo-800/50 flex items-center gap-2';
+          badge.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-indigo-400 animate-pulse"></span> Перерва`;
+        }
+      }
+    }
+
+    function renderTasks() {
+      const list = document.getElementById('tasks-list');
+      if(!list) return;
+      
+      list.innerHTML = tasks.map(t => `
+        <div class="flex items-start gap-2.5 p-2.5 rounded-xl bg-slate-950 border ${t.done ? 'border-slate-800/50 opacity-50' : 'border-slate-800'} transition group">
+          <input type="checkbox" ${t.done ? 'checked' : ''} onchange="toggleTask(${t.id})" class="mt-1 w-4 h-4 rounded border-slate-700 text-indigo-600 focus:ring-indigo-600 focus:ring-offset-slate-950 bg-slate-900 cursor-pointer">
+          <span class="text-xs sm:text-sm text-slate-200 flex-1 ${t.done ? 'line-through text-slate-500' : ''}">${t.text}</span>
+          <button onclick="deleteTask(${t.id})" class="text-slate-600 hover:text-red-400 transition opacity-0 group-hover:opacity-100">✕</button>
+        </div>
+      `).join('');
+    }
+
+    function addTask(e) {
+      e.preventDefault();
+      const input = document.getElementById('task-input');
+      const text = input.value.trim();
+      if (!text) return;
+
+      const safeText = text.replace(/</g, "&lt;").replace(/>/g, "&gt;");
+
+      tasks.push({ id: Date.now(), text: safeText, done: false });
+      localStorage.setItem('rz_schedule_tasks', JSON.stringify(tasks));
+      input.value = '';
+      renderTasks();
+    }
+
+    function toggleTask(id) {
+      const t = tasks.find(x => x.id === id);
+      if (t) {
+        t.done = !t.done;
+        localStorage.setItem('rz_schedule_tasks', JSON.stringify(tasks));
+        renderTasks();
+      }
+    }
+
+    function deleteTask(id) {
+      tasks = tasks.filter(x => x.id !== id);
+      localStorage.setItem('rz_schedule_tasks', JSON.stringify(tasks));
+      renderTasks();
+    }
+
+    function init() {
+      actualCurrentWeekNumber = getAcademicWeek(new Date());
+      viewedWeekNumber = actualCurrentWeekNumber;
+      
+      renderSchedule();
+      renderTasks();
+      setInterval(updateLiveStatus, 60000);
+    }
+
+    document.addEventListener('DOMContentLoaded', init);
+  </script>
+</body>
+</html>
